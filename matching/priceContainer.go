@@ -1,4 +1,4 @@
-package order
+package matching
 
 import "github.com/shopspring/decimal"
 
