@@ -25,7 +25,7 @@ func (ob *OrderBook) Find(order Order) (o Order) {
 	return
 }
 
-func (ob *OrderBook) Add(order Order) error {
+func (ob *OrderBook) Add(order *Order) {
 	container := InitContainer(order.Price)
 	values, found := ob.Book.Get(order.Price.String())
 	if found {
@@ -34,10 +34,9 @@ func (ob *OrderBook) Add(order Order) error {
 	container.Add(order)
 	ob.Book.Put(order.Price.String(), container)
 
-	return nil
 }
 
-func (ob *OrderBook) Remove(order Order) (o Order) {
+func (ob *OrderBook) Remove(order *Order) (o Order) {
 	values, found := ob.Book.Get(order.Price.String())
 	if !found {
 		return
@@ -47,7 +46,7 @@ func (ob *OrderBook) Remove(order Order) (o Order) {
 	if o.Id == 0 {
 		return
 	}
-	priceLevel.Remove(order)
+	priceLevel.Remove(order.Id)
 	if priceLevel.IsEmpty() {
 		ob.Book.Remove(order.Price.String())
 	}

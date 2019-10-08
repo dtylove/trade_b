@@ -1,20 +1,30 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	rbt "github.com/emirpasic/gods/trees/redblacktree"
+)
 
 func main() {
-	arr := []int{1, 2, 3, 4, 5, 6, 7, 8, 9}
+	tree := rbt.NewWithIntComparator() // empty (keys are of type int)
 
+	tree.Put(1, "x") // 1->x
+	tree.Put(2, "b") // 1->x, 2->b (in order)
+	tree.Put(1, "a") // 1->a, 2->b (in order, replacement)
+	tree.Put(3, "c") // 1->a, 2->b, 3->c (in order)
+	tree.Put(4, "d") // 1->a, 2->b, 3->c, 4->d (in order)
+	tree.Put(5, "e") // 1->a, 2->b, 3->c, 4->d, 5->e (in order)
+	tree.Put(6, "f") // 1->a, 2->b, 3->c, 4->d, 5->e, 6->f (in order)
 
+	keys := tree.Keys()
+	fmt.Print(tree)
+	fmt.Print(keys)
 
-	for index, o := range arr{
-		fmt.Print(index)
-		if o == 9 {
-			arr = append(arr[:index], arr[index +1:]...)
-			fmt.Print(index)
-			break
-		}
+	itor := tree.Iterator()
+	for itor.Next(){
+		fmt.Print(itor.Key(), "\n")
+		fmt.Print(itor.Value(), "\n")
+
 	}
 
-	fmt.Print(arr)
 }

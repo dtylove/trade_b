@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/shopspring/decimal"
+	"mathcing/matching"
 )
 
 func main()  {
@@ -12,4 +13,5 @@ func main()  {
 	c := a.Div(b)
 
 	fmt.Print(c)
+	matching.InitEngine(4)
 }
