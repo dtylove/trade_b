@@ -1,6 +1,7 @@
 package matching
 
 import (
+	"fmt"
 	rbt "github.com/emirpasic/gods/trees/redblacktree"
 )
 
@@ -42,6 +43,7 @@ func (ob *OrderBook) Remove(order Order) (o Order) {
 	if !found {
 		return
 	}
+
 	priceLevel := values.(PriceContainer)
 	o = priceLevel.Find(order.Id)
 	if o.Id == 0 {
@@ -53,4 +55,10 @@ func (ob *OrderBook) Remove(order Order) (o Order) {
 	}
 
 	return
+}
+
+func (ob *OrderBook) Print() {
+	//fmt.Println(ob.Book)
+	fmt.Println(ob.Book.Keys())
+	fmt.Println(ob.Book.Values())
 }

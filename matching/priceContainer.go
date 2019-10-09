@@ -2,7 +2,7 @@ package matching
 
 import "github.com/shopspring/decimal"
 
-// 相同价格的挂单放到数组内 尽量减轻树频繁增删改查的压力
+// 相同价格的挂单放到数组内
 type PriceContainer struct {
 	Price  decimal.Decimal
 	Orders []Order

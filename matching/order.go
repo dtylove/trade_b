@@ -27,9 +27,9 @@ type Order struct {
 // 是否可以成交
 func (order *Order) IsCrossed(price decimal.Decimal) (result bool) {
 	if order.IsBuy == false {
-		result = price.GreaterThan(order.Price)
+		result = price.GreaterThanOrEqual(order.Price)
 	} else {
-		result = price.LessThan(order.Price)
+		result = price.LessThanOrEqual(order.Price)
 	}
 	return
 }
