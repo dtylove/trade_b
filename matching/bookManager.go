@@ -13,9 +13,8 @@ func InitBookManager(marketId int) (orderBookManager BookManager) {
 	return
 }
 
-func (obm *BookManager) GetBooks(stype string) (OrderBook, OrderBook) {
-	if stype == "ask" {
-		return obm.AskOrderBook, obm.BidOrderBook
-	}
-	return obm.BidOrderBook, obm.AskOrderBook
+func (obm *BookManager) GetBooks() (OrderBook, OrderBook) {
+
+	return obm.AskOrderBook, obm.BidOrderBook
+
 }

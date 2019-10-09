@@ -35,11 +35,22 @@ func (order *Order) IsCrossed(price decimal.Decimal) (result bool) {
 }
 
 // 交易
-func (order *Order) TradeWith(counterOrder Order) {
+func (order *Order) TradeWith(marketOrder *Order) {
+	tmpZero := decimal.NewFromFloat(0.0)
+	matchVol := decimal.Min(order.Remained, marketOrder.Remained)
+	order.MatchVol = matchVol
+	order.Remained = order.Remained.Sub(matchVol)
+	order.MatchCount++
+	if order.Remained.LessThanOrEqual(tmpZero) {
+		order.IsRemain = false
+	}
 
-	matchVol := decimal.Min(order.Volume, counterOrder.Volume)
-	order.Volume = order.Volume.Sub(matchVol)
-	counterOrder.Volume = counterOrder.Volume.Sub(matchVol)
+	marketOrder.MatchVol = matchVol
+	marketOrder.Remained = marketOrder.Remained.Sub(matchVol)
+	marketOrder.MatchCount++
+	if marketOrder.Remained.LessThanOrEqual(tmpZero) {
+		marketOrder.IsRemain = false
+	}
 
 	return
 }

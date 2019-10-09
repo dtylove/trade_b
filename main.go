@@ -19,6 +19,7 @@ func main() {
 	order.UserId = 1
 	order.Id = 1
 
+<<<<<<< HEAD
 	abook, bbook := bm.GetBooks("asks")
 
 	abook.Add(order)
@@ -26,3 +27,8 @@ func main() {
 	abook.Print()
 	bbook.Print()
 }
+=======
+	fmt.Print(c)
+	matching.InitEngine(4)
+}
+>>>>>>> c4c5ffd9075d29e35c01729bfe027fd2ab01b1ee

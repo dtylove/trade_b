@@ -5,17 +5,17 @@ import "github.com/shopspring/decimal"
 // 相同价格的挂单放到数组内
 type PriceContainer struct {
 	Price  decimal.Decimal
-	Orders []Order
+	Orders []*Order
 }
 
 func InitContainer(price decimal.Decimal) (pl PriceContainer) {
 	pl.Price = price
-	pl.Orders = []Order{}
+	pl.Orders = []*Order{}
 	return
 }
 
 func (pl *PriceContainer) Top() Order {
-	return pl.Orders[0]
+	return *pl.Orders[0]
 }
 
 func (pl *PriceContainer) IsEmpty() (result bool) {
@@ -25,16 +25,15 @@ func (pl *PriceContainer) IsEmpty() (result bool) {
 	return
 }
 
-func (pl *PriceContainer) Add(order Order) {
+func (pl *PriceContainer) Add(order *Order) {
 	pl.Orders = append(pl.Orders, order)
 	return
 }
 
-func (pl *PriceContainer) Remove(order Order) {
-	var orders []Order
+func (pl *PriceContainer) Remove(orderId int64) {
 	for index, o := range pl.Orders {
-		if o.Id == order.Id {
-			pl.Orders = append(orders[index:], orders[:index +1]...)
+		if o.Id == orderId {
+			pl.Orders = append(pl.Orders[index:], pl.Orders[:index +1]...)
 			break
 		}
 	}
@@ -44,7 +43,7 @@ func (pl *PriceContainer) Remove(order Order) {
 func (pl *PriceContainer) Find(id int64) (order Order) {
 	for _, o := range pl.Orders {
 		if o.Id == id {
-			order = o
+			order = *o
 			break
 		}
 	}
