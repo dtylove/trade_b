@@ -10,7 +10,7 @@ func main() {
 
 	var order matching.Order
 	order.Id = 1                                   // 订单id
-	order.IsBuy = true                             // 买true bids 卖false asks
+	order.IsBuy = false                            // 买true bids 卖false asks
 	order.BookId = 1                               // order book id (针对不同市场 货币对)
 	order.OrderType = "asks"                       // asks bids
 	order.Price, _ = decimal.NewFromString("1")    // 价格
@@ -19,16 +19,18 @@ func main() {
 	order.UserId = 1
 	order.Id = 1
 
-<<<<<<< HEAD
-	abook, bbook := bm.GetBooks("asks")
+	abook, _ := bm.GetBooks()
 
-	abook.Add(order)
-	bbook.Add(order)
-	abook.Print()
-	bbook.Print()
+	err := abook.Add(order)
+	if err != nil {
+		panic(err)
+	}
+	//bbook.Add(order)
+	//abook.Print(10)
+	//bbook.Print(10)
+	o, err := abook.Top()
+	if err != nil {
+		panic(err)
+	}
+	o.Print()
 }
-=======
-	fmt.Print(c)
-	matching.InitEngine(4)
-}
->>>>>>> c4c5ffd9075d29e35c01729bfe027fd2ab01b1ee

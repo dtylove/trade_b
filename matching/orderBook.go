@@ -1,8 +1,10 @@
 package matching
 
 import (
+	"encoding/json"
 	"fmt"
 	rbt "github.com/emirpasic/gods/trees/redblacktree"
+	"github.com/pkg/errors"
 )
 
 type OrderBook struct {
@@ -19,14 +21,33 @@ func InitOrderBook(marketId int, side string) (ob OrderBook) {
 	return
 }
 
-func (ob *OrderBook) Find(order Order) (o Order) {
+func (ob *OrderBook) Find(order Order) (o Order, err error) {
+	if ob.Book.Size() == 0{
+		err = errors.New("book中没有order")
+		return
+	}
+
 	values, _ := ob.Book.Get(order.Price.String())
 	priceLevel := values.(PriceContainer)
 	o = priceLevel.Find(order.Id)
+
 	return
 }
 
-func (ob *OrderBook) Add(order *Order) {
+func (ob *OrderBook) Add(order Order) (err error) {
+	if ob.Side != order.OrderType {
+		return errors.New("book类型 与 订单类型不匹配 book.Side: " +
+			ob.Side + " orderType: " + order.OrderType)
+	}
+
+	if ob.Side == Asks && order.IsBuy == true {
+		return errors.New("book类型为 " + Asks + " order.IsBuy 必须为 false ")
+	}
+
+	if ob.Side == Bids && order.IsBuy == false {
+		return errors.New("book类型为 " + Bids + " order.IsBuy 必须为 true ")
+	}
+
 	container := InitContainer(order.Price)
 	values, found := ob.Book.Get(order.Price.String())
 	if found {
@@ -35,9 +56,14 @@ func (ob *OrderBook) Add(order *Order) {
 	container.Add(order)
 	ob.Book.Put(order.Price.String(), container)
 
+	return
 }
 
-func (ob *OrderBook) Remove(order *Order) (o Order) {
+func (ob *OrderBook) Remove(order Order) (o Order, err error) {
+	if ob.Book.Size() == 0{
+		err = errors.New("book中没有order")
+		return
+	}
 	values, found := ob.Book.Get(order.Price.String())
 	if !found {
 		return
@@ -56,8 +82,40 @@ func (ob *OrderBook) Remove(order *Order) (o Order) {
 	return
 }
 
-func (ob *OrderBook) Print() {
+func (ob *OrderBook) Top() (order Order, err error) {
+	if ob.Book.Size() == 0{
+		err = errors.New("book中没有order")
+		return
+	}
+
+	var container PriceContainer
+	if ob.Side == "asks" {
+		container = ob.Book.Left().Value.(PriceContainer)
+	} else {
+		container = ob.Book.Right().Value.(PriceContainer)
+	}
+
+	container.Top()
+	return
+}
+
+func (ob *OrderBook) Print(max int) {
 	//fmt.Println(ob.Book)
-	fmt.Println(ob.Book.Keys())
-	fmt.Println(ob.Book.Values())
+	iter := ob.Book.Iterator()
+	count := 0
+	for ; iter.Next() && count < max; {
+		fmt.Println("TreeKey(price): ", iter.Key())
+
+		container := iter.Value().(PriceContainer)
+		fmt.Println("ContainerPrice: ", container.Price)
+		//fmt.Println("OrdersContainer:  ", container.Orders)
+		orderSilce := container.Orders
+		for _, v := range orderSilce {
+			orderJson, _ := json.Marshal(v)
+			fmt.Println("Order:  ", string(orderJson))
+		}
+		fmt.Print("\n")
+		count++
+	}
+
 }

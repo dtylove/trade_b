@@ -1,6 +1,10 @@
 package matching
 
-import "github.com/shopspring/decimal"
+import (
+	"encoding/json"
+	"fmt"
+	"github.com/shopspring/decimal"
+)
 
 type Order struct {
 	Id         int64           // 订单id
@@ -35,7 +39,7 @@ func (order *Order) IsCrossed(price decimal.Decimal) (result bool) {
 }
 
 // 交易
-func (order *Order) TradeWith(marketOrder *Order) {
+func (order *Order) TradeWith(marketOrder Order) {
 	tmpZero := decimal.NewFromFloat(0.0)
 	matchVol := decimal.Min(order.Remained, marketOrder.Remained)
 	order.MatchVol = matchVol
@@ -53,4 +57,9 @@ func (order *Order) TradeWith(marketOrder *Order) {
 	}
 
 	return
+}
+
+func (order *Order)Print(){
+	oJson, _ := json.Marshal(order)
+	fmt.Println(string(oJson))
 }
