@@ -22,14 +22,18 @@ func InitOrderBook(marketId int, side string) (ob OrderBook) {
 }
 
 func (ob *OrderBook) Find(order Order) (o Order, err error) {
-	if ob.Book.Size() == 0{
+	if ob.Book.Size() == 0 {
 		err = errors.New("book中没有order")
 		return
 	}
 
 	values, _ := ob.Book.Get(order.Price.String())
-	priceLevel := values.(PriceContainer)
-	o = priceLevel.Find(order.Id)
+	if values == nil {
+		err = errors.New("找不到该订单")
+		return
+	}
+	priceContainer := values.(PriceContainer)
+	o = priceContainer.Find(order.Id)
 
 	return
 }
@@ -41,11 +45,11 @@ func (ob *OrderBook) Add(order Order) (err error) {
 	}
 
 	if ob.Side == Asks && order.IsBuy == true {
-		return errors.New("book类型为 " + Asks + " order.IsBuy 必须为 false ")
+		return errors.New("book类型为 Asks order.IsBuy 必须为 false ")
 	}
 
 	if ob.Side == Bids && order.IsBuy == false {
-		return errors.New("book类型为 " + Bids + " order.IsBuy 必须为 true ")
+		return errors.New("book类型为 Bids order.IsBuy 必须为 true ")
 	}
 
 	container := InitContainer(order.Price)
@@ -59,35 +63,35 @@ func (ob *OrderBook) Add(order Order) (err error) {
 	return
 }
 
-func (ob *OrderBook) Remove(order Order) (o Order, err error) {
-	if ob.Book.Size() == 0{
-		err = errors.New("book中没有order")
-		return
+// 删除必须使用 价格 和 order id
+func (ob *OrderBook) Remove(order Order) (o Order) {
+	if ob.Book.Size() == 0 {
+		return order
 	}
 	values, found := ob.Book.Get(order.Price.String())
 	if !found {
 		return
 	}
 
-	priceLevel := values.(PriceContainer)
-	o = priceLevel.Find(order.Id)
+	priceContainer := values.(PriceContainer)
+	o = priceContainer.Find(order.Id)
 	if o.Id == 0 {
 		return
 	}
-	priceLevel.Remove(order.Id)
-	if priceLevel.IsEmpty() {
+
+	priceContainer.Remove(order.Id)
+	if !priceContainer.IsEmpty() {
 		ob.Book.Remove(order.Price.String())
 	}
 
 	return
 }
 
-func (ob *OrderBook) Top() (order Order, err error) {
-	if ob.Book.Size() == 0{
-		err = errors.New("book中没有order")
-		return
-	}
+func (ob *OrderBook) Size() int {
+	return ob.Book.Size()
+}
 
+func (ob *OrderBook) Top() (order *Order) {
 	var container PriceContainer
 	if ob.Side == "asks" {
 		container = ob.Book.Left().Value.(PriceContainer)
@@ -95,8 +99,7 @@ func (ob *OrderBook) Top() (order Order, err error) {
 		container = ob.Book.Right().Value.(PriceContainer)
 	}
 
-	container.Top()
-	return
+	return container.Top()
 }
 
 func (ob *OrderBook) Print(max int) {

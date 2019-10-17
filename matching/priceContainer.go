@@ -14,8 +14,8 @@ func InitContainer(price decimal.Decimal) (pl PriceContainer) {
 	return
 }
 
-func (pl *PriceContainer) Top() Order {
-	return pl.Orders[0]
+func (pl *PriceContainer) Top() *Order {
+	return &pl.Orders[0]
 }
 
 func (pl *PriceContainer) IsEmpty() (result bool) {
