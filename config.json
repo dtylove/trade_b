@@ -1,0 +1,28 @@
+{
+  "dataSource": {
+    "driverName": "mysql",
+    "addr": "127.0.0.1:3306",
+    "database": "godb",
+    "user": "root",
+    "password": "root",
+    "prefix": "test_",
+    "migrate": true
+  },
+  "redis": {
+    "addr": ":6379",
+    "password": ""
+  },
+  "kafka": {
+    "brokers": [
+      "localhost:9092"
+    ]
+  },
+  "pushServer": {
+    "addr": ":8002",
+    "path": "/ws"
+  },
+  "restServer": {
+    "addr": ":8001"
+  },
+  "jwtToken": "flj23jfoi23apdl3jfslkj23za01mf3"
+}

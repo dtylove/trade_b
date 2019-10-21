@@ -20,5 +20,20 @@ func SignUp(ctx *gin.Context) {
 	data, _ := json.Marshal(body)
 	fmt.Println(string(data))
 
+	//user := &models.User{
+	//	Email:       body.Email,
+	//	PassWord:    body.PassWord,
+	//	MobilePhone: body.Phone,
+	//}
+
+	//db := models.GetDB()
+	//db.Create(user)
+
+	//if err != nil {
+	//	panic(err)
+	//	//ctx.JSON(http.StatusBadRequest, "创建失败")
+	//	return
+	//}
+
 	ctx.JSON(http.StatusOK, nil)
 }
