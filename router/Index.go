@@ -13,7 +13,9 @@ func Start() {
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 	router := gin.Default()
 
-	router.POST("/signup", SignUp)
+	router.POST("/user/signup", SignUp)
+	router.POST("/user/signin", SignIn)
+	router.GET("/user/:id", GetUser)
 
 	err := router.Run()
 	if err != nil {

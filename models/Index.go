@@ -20,12 +20,13 @@ func InitOnce() {
 		dataDriver.Addr,
 		dataDriver.Database,
 	)
-	gdb, err := gorm.Open(dataDriver.DriverName, url)
+	db, err := gorm.Open(dataDriver.DriverName, url)
 
 	if err != nil {
 		panic(err)
 	}
 
+	gdb = db
 	gdb.SingularTable(true)       //全局设置表名不可以为复数形式。
 	gdb.DB().SetMaxIdleConns(10)  //SetMaxOpenConns用于设置最大打开的连接数
 	gdb.DB().SetMaxOpenConns(100) //SetMaxIdleConns用于设置闲置的连接数
