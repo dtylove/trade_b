@@ -3,8 +3,8 @@ package main
 import (
 	_ "dtyTrade/config"
 	"dtyTrade/matching"
-	"dtyTrade/models"
-	"dtyTrade/router"
+	"dtyTrade/rest"
+	"dtyTrade/rest/models"
 )
 
 func main() {
@@ -14,5 +14,5 @@ func main() {
 	go engine.RunOrderApplier()
 
 	models.InitDB()
-	router.Start()
+	rest.Start()
 }

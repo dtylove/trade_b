@@ -13,6 +13,7 @@ type User struct {
 
 func (u *User) CreateByEmail() error {
 	user := &User{Email: u.Email, PassWord: u.PassWord}
+
 	return GetDB().Create(&user).Error
 }
 
@@ -27,4 +28,8 @@ func (u *User) Create() error {
 
 func (u *User) FindById() {
 	GetDB().Find(u, u.Model.ID)
+}
+
+func (u *User) FindByEmail() {
+	GetDB().Find(u, &User{Email: u.Email})
 }

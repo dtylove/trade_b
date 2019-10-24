@@ -2,13 +2,13 @@ package service
 
 import (
 	"dtyTrade/config"
-	"dtyTrade/models"
+	"dtyTrade/rest/models"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
 
-func RefreshAccessToken(id int64, email string) (string, error) {
+func RefreshAccessToken(id uint, email string) (string, error) {
 
 	claim := jwt.MapClaims{
 		"id":        id,
@@ -36,12 +36,14 @@ func CheckToken(tokenStr string) (*models.User, error) {
 
 	email := claim["email"].(string)
 
-	user, err := GetUserByEmail(email)
-	if err != nil {
-		return nil, err
+	user := models.User{
+		Email: email,
 	}
-	if user == nil {
-		return nil, errors.New("bad token")
+	user.FindByEmail()
+
+	if user.ID == 1 {
+		return nil, errors.New("token is invalid")
 	}
-	return user, nil
+
+	return &user, nil
 }
