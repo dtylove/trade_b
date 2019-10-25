@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-func Res(ctx *gin.Context, obj interface{}){
-
-	ctx.JSON(http.StatusOK, "参数不正确")
+func Res(ctx *gin.Context, msg string, data interface{}) {
+	ctx.JSON(http.StatusOK, BuildMsg(msg, data))
 }

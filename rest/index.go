@@ -1,6 +1,8 @@
 package rest
 
 import (
+	_ "dtyTrade/rest/response"
+
 	"dtyTrade/rest/midware"
 	"dtyTrade/rest/router"
 	"github.com/gin-gonic/gin"
