@@ -9,20 +9,20 @@ import (
 var Zero = decimal.NewFromFloat(0.0)
 
 type Order struct {
-	Id        int64  // 订单id
+	Id        uint `gorm:"primary_key"`  // 订单id
 	IsBuy     bool   // 买true bids 卖false asks
-	BookId    int    // order book id (针对不同市场 货币对)
 	OrderType string // asks bids
+	MarketId  uint   // order book id (针对不同市场 货币对)
 
-	Price    decimal.Decimal // 价格
-	Quantity decimal.Decimal // 总个数
-	Remained decimal.Decimal // 剩余个数
-	MatchQ   decimal.Decimal // 本次交个数
+	Price    decimal.Decimal `gorm:"type:varchar(64)"`// 价格
+	Quantity decimal.Decimal `gorm:"type:varchar(64)"`// 总个数
+	Remained decimal.Decimal `gorm:"type:varchar(64)"`// 剩余个数
+	MatchQ   decimal.Decimal `gorm:"type:varchar(64)"`// 本次交个数
 
-	MatchCount int   // 成交次数
-	Timestamp  int64 // 创建时间戳
-	UserId     int64 // 用户id
-	IsRemain   bool  // 是否完全成交
+	MatchCount uint // 成交次数
+	Timestamp  uint // 创建时间戳
+	UserId     uint // 用户id
+	IsRemain   bool // 是否完全成交
 }
 
 // 是否可以成交

@@ -30,7 +30,7 @@ func (pl *PriceContainer) Add(order Order) {
 	return
 }
 
-func (pl *PriceContainer) Remove(orderId int64) {
+func (pl *PriceContainer) Remove(orderId uint) {
 	for index, o := range pl.Orders {
 		if o.Id == orderId {
 			pl.Orders = append(pl.Orders[index:], pl.Orders[:index+1]...)
@@ -40,7 +40,7 @@ func (pl *PriceContainer) Remove(orderId int64) {
 	return
 }
 
-func (pl *PriceContainer) Find(id int64) (order Order) {
+func (pl *PriceContainer) Find(id uint) (order Order) {
 	for _, o := range pl.Orders {
 		if o.Id == id {
 			order = o

@@ -8,13 +8,13 @@ import (
 )
 
 type OrderBook struct {
-	MarketId  int       // 市场id
+	MarketId  uint       // 市场id
 	Side      string    // asks 或 bids
 	Book      *rbt.Tree // 市场中的挂单
 	Broadcast bool      // 广播
 }
 
-func InitOrderBook(marketId int, side string) (ob OrderBook) {
+func InitOrderBook(marketId uint, side string) (ob OrderBook) {
 	ob.MarketId = marketId
 	ob.Side = side
 	ob.Book = rbt.NewWithStringComparator()

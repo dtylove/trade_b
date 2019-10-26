@@ -17,5 +17,6 @@ func init() {
 		C_PARAMS_ERR:      "params error",
 		C_TOKEN_NOT_FOUND: "token not found",
 		U_CREATE_USER_ERR: "create user failed",
+		U_EMAIL_NOT_FOUND: "email not found",
 	}
 }

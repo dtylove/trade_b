@@ -39,9 +39,9 @@ func CheckToken(tokenStr string) (*models.User, error) {
 	user := models.User{
 		Email: email,
 	}
-	user.FindByEmail()
+	err = user.FindByEmail()
 
-	if user.ID == 1 {
+	if user.ID == 0 || err != nil {
 		return nil, errors.New("token is invalid")
 	}
 

@@ -10,8 +10,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const tokenExpired = 7*24*60*60
+const tokenExpired = 7 * 24 * 60 * 60
 
+type SingUpRequest struct {
+	Phone    string
+	Email    string
+	PassWord string
+}
 func SignUp(ctx *gin.Context) {
 	var body SingUpRequest
 
@@ -35,8 +40,8 @@ func SignUp(ctx *gin.Context) {
 	}
 
 	user.PassWord = string(hashPW)
-	err = user.Create()
-	if err != nil {
+
+	if err = user.Add(); err != nil {
 		// TODO log
 		response.Res(ctx, response.U_CREATE_USER_ERR, nil)
 		return
@@ -45,6 +50,10 @@ func SignUp(ctx *gin.Context) {
 	response.Res(ctx, response.OK, nil)
 }
 
+type SignInRequest struct {
+	Email    string
+	PassWord string
+}
 func SignIn(ctx *gin.Context) {
 	fmt.Println("SignIn")
 	var body SignInRequest
@@ -58,13 +67,16 @@ func SignIn(ctx *gin.Context) {
 		response.Res(ctx, response.U_PWD_ERR, nil)
 		return
 	}
-	
+
 	user := models.User{
-		Email: body.Email,
+		Email:    body.Email,
 		PassWord: string(hashPW),
 	}
 
-	user.FindByEmail()
+	if err := user.FindByEmail(); err != nil {
+		response.Res(ctx, response.U_CREATE_USER_ERR, nil)
+		return
+	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.PassWord), []byte(body.PassWord))
 	if err != nil {

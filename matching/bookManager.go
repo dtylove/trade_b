@@ -1,14 +1,14 @@
 package matching
 
 type BookManager struct {
-	MarketId     int
+	MarketId     uint
 	AsksOrderBook OrderBook
 	BidsOrderBook OrderBook
 }
 /**
  * param  marketId 市场id 不同货币对 对应不同的id
  */
-func InitBookManager(marketId int) (orderBookManager BookManager) {
+func InitBookManager(marketId uint) (orderBookManager BookManager) {
 	orderBookManager.MarketId = marketId
 	orderBookManager.AsksOrderBook = InitOrderBook(marketId, Asks)
 	orderBookManager.BidsOrderBook = InitOrderBook(marketId, Bids)

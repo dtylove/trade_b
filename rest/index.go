@@ -23,6 +23,10 @@ func Start() {
 	userGroup.POST("/signin", router.SignIn)
 	userGroup.GET("/:id", midware.VerifyToken(), router.GetUser)
 
+	orderGroup := r.Group("/order")
+
+	orderGroup.POST("/submit", midware.VerifyToken(), router.SubmitOrder)
+
 	err := r.Run()
 	if err != nil {
 		panic(err)
