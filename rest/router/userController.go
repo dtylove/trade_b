@@ -85,7 +85,7 @@ func SignIn(ctx *gin.Context) {
 	}
 
 	var token string
-	token, err = service.RefreshAccessToken(user.ID, user.Email)
+	token, err = service.RefreshAccessToken(user.Id, user.Email)
 	if err != nil {
 		response.Res(ctx, response.C_TOKEN_NOT_FOUND, nil)
 		return
@@ -107,7 +107,7 @@ func GetUser(ctx *gin.Context) {
 	//requester := ctx.MustGet("user").(models.User)
 
 	user := models.User{}
-	user.Model.ID = uint(userId)
+	user.Id = uint(userId)
 
 	user.FindById()
 

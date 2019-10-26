@@ -41,7 +41,7 @@ func CheckToken(tokenStr string) (*models.User, error) {
 	}
 	err = user.FindByEmail()
 
-	if user.ID == 0 || err != nil {
+	if user.Id == 0 || err != nil {
 		return nil, errors.New("token is invalid")
 	}
 

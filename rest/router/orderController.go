@@ -1,8 +1,8 @@
 package router
 
 import (
-	"dtyTrade/matching"
 	"dtyTrade/rest/models"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"time"
@@ -38,17 +38,16 @@ func SubmitOrder(ctx *gin.Context) {
 	}
 
 	order := models.Order{
-		Order: matching.Order{
-			IsBuy:    body.IsBuy,
-			MarketId: body.MarketId,
-			Price:    price,
-			Quantity: quantity,
-			UserId:   user.ID,
-			Timestamp: uint(time.Now().Unix()),
-		},
+		IsBuy:     body.IsBuy,
+		MarketId:  body.MarketId,
+		Price:     price.String(),
+		Quantity:  quantity.String(),
+		UserId:    user.Id,
+		Timestamp: uint(time.Now().Unix()),
 	}
 
 	if err := order.Add(); err != nil {
+		fmt.Println(err)
 		response.Res(ctx, response.O_ADD_ERR, nil)
 		return
 	}

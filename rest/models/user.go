@@ -1,14 +1,16 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type User struct {
-	gorm.Model
+	Id          uint
 	Email       string `grom:"column:email;"` // 邮箱
 	MobilePhone string                        // 电话
 	PassWord    string                        // 密码
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func (u *User) CreateByEmail() error {
@@ -26,7 +28,7 @@ func (u *User) Add() error {
 }
 
 func (u *User) FindById() error {
-	return GetDB().Find(u, u.Model.ID).Error
+	return GetDB().Find(u, u.Id).Error
 }
 
 func (u *User) FindByEmail() error {
