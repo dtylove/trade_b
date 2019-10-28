@@ -36,7 +36,7 @@ func InitOnce() {
 	}
 
 	if dataDriver.Migrate {
-		gdb.CreateTable(&User{}, &Order{})
+		gdb.CreateTable(&User{}, &Order{}, &Product{})
 	}
 }
 

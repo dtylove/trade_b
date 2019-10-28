@@ -14,10 +14,10 @@ type Order struct {
 	OrderType string // asks bids
 	MarketId  uint   // order book id (针对不同市场 货币对)
 
-	Price    decimal.Decimal `sql:"type:varchar(64)" json:"price"`// 价格
-	Quantity decimal.Decimal `sql:"type:varchar(64)" json:"quantity"`// 总个数
-	Remained decimal.Decimal `sql:"type:varchar(64)" json:"remained"`// 剩余个数
-	MatchQ   decimal.Decimal `sql:"type:varchar(64)" json:"match_q"`// 本次交个数
+	Price    decimal.Decimal `sql:"-"`// 价格
+	Quantity decimal.Decimal `sql:"-"`// 总个数
+	Remained decimal.Decimal `sql:"-"`// 剩余个数
+	MatchQ   decimal.Decimal `sql:"-"`// 本次交个数
 
 	MatchCount uint // 成交次数
 	Timestamp  uint // 创建时间戳

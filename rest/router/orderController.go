@@ -1,24 +1,23 @@
 package router
 
 import (
+	"dtyTrade/matching"
 	"dtyTrade/rest/models"
+	"dtyTrade/rest/response"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
 	"time"
-
-	"dtyTrade/rest/response"
 )
 
-type OrderRequest struct {
+type orderRequest struct {
 	Price    string // 单价
 	Quantity string // 数量
 	MarketId uint   // 市场id
 	IsBuy    bool   // true 买 false 卖
 }
-
 func SubmitOrder(ctx *gin.Context) {
-	var body OrderRequest
+	var body orderRequest
 	if err := ctx.BindJSON(&body); err != nil {
 		response.Res(ctx, response.C_PARAMS_ERR, nil)
 		return
@@ -33,17 +32,21 @@ func SubmitOrder(ctx *gin.Context) {
 
 	quantity, err := decimal.NewFromString(body.Quantity)
 	if err != nil {
-		response.Res(ctx, response.C_PARAMS_ERR, "quantity is not number")
+		response.Res(ctx, response.C_PARAMS_ERR, "quantity is not string number")
 		return
 	}
 
 	order := models.Order{
-		IsBuy:     body.IsBuy,
-		MarketId:  body.MarketId,
-		Price:     price.String(),
-		Quantity:  quantity.String(),
-		UserId:    user.Id,
-		Timestamp: uint(time.Now().Unix()),
+		Price:     body.Price,
+		Quantity:  body.Quantity,
+		Order: matching.Order{
+			IsBuy:     body.IsBuy,
+			MarketId:  body.MarketId,
+			Price:     price,
+			Quantity:  quantity,
+			UserId:    user.Id,
+			Timestamp: uint(time.Now().Unix()),
+		},
 	}
 
 	if err := order.Add(); err != nil {

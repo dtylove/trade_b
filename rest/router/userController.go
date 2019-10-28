@@ -12,13 +12,13 @@ import (
 
 const tokenExpired = 7 * 24 * 60 * 60
 
-type SingUpRequest struct {
+type signUpRequest struct {
 	Phone    string
 	Email    string
 	PassWord string
 }
 func SignUp(ctx *gin.Context) {
-	var body SingUpRequest
+	var body signUpRequest
 
 	if err := ctx.BindJSON(&body); err != nil {
 		// TODO log
@@ -50,13 +50,13 @@ func SignUp(ctx *gin.Context) {
 	response.Res(ctx, response.OK, nil)
 }
 
-type SignInRequest struct {
+type signInRequest struct {
 	Email    string
 	PassWord string
 }
 func SignIn(ctx *gin.Context) {
 	fmt.Println("SignIn")
-	var body SignInRequest
+	var body signInRequest
 	if err := ctx.BindJSON(&body); err != nil {
 		response.Res(ctx, response.C_PARAMS_ERR, nil)
 		return

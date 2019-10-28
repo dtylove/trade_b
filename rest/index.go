@@ -27,6 +27,11 @@ func Start() {
 
 	orderGroup.POST("/submit", midware.VerifyToken(), router.SubmitOrder)
 
+	productGroup := r.Group("/product")
+
+	productGroup.GET("/:id", router.GetProduct)
+	productGroup.POST("/create", router.CreateProduct)
+
 	err := r.Run()
 	if err != nil {
 		panic(err)
