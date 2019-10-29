@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin/json"
 	"time"
 )
 
@@ -20,14 +18,4 @@ type Product struct {
 	CounterMinQ  string `sql:"type:decimal(32,16);"` // counter最小挂单量
 	CounterMaxQ  string `sql:"type:decimal(32,16);"` // 最大
 	CounterScale int32                               // 最大小数位
-}
-
-func (p *Product) Add() error {
-	data, _ := json.Marshal(p)
-	fmt.Println(string(data))
-	return GetDB().Create(p).Error
-}
-
-func (p *Product) FindById() error {
-	return GetDB().Find(p, p.Id).Error
 }

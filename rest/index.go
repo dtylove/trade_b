@@ -29,8 +29,10 @@ func Start() {
 
 	productGroup := r.Group("/product")
 
-	productGroup.GET("/:id", router.GetProduct)
+	productGroup.GET("/single/:id", router.GetProduct)
+	productGroup.GET("/list", router.GetProducts)
 	productGroup.POST("/create", router.CreateProduct)
+
 
 	err := r.Run()
 	if err != nil {

@@ -23,13 +23,6 @@ func (u *User) CreateByPhone() error {
 	return GetDB().Create(&user).Error
 }
 
-func (u *User) Add() error {
-	return GetDB().Create(u).Error
-}
-
-func (u *User) FindById() error {
-	return GetDB().Find(u, u.Id).Error
-}
 
 func (u *User) FindByEmail() error {
 	return GetDB().Find(u, &User{Email: u.Email}).Error

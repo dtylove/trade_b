@@ -9,15 +9,15 @@ import (
 var Zero = decimal.NewFromFloat(0.0)
 
 type Order struct {
-	Id        uint `gorm:"primary_key"`  // 订单id
-	IsBuy     bool   // 买true bids 卖false asks
-	OrderType string // asks bids
-	MarketId  uint   // order book id (针对不同市场 货币对)
+	Id        uint `gorm:"primary_key"` // 订单id
+	IsBuy     bool                      // 买true bids 卖false asks
+	OrderType string                    // asks bids
+	MarketId  uint                      // order book id (针对不同市场 货币对)
 
-	Price    decimal.Decimal `sql:"-"`// 价格
-	Quantity decimal.Decimal `sql:"-"`// 总个数
-	Remained decimal.Decimal `sql:"-"`// 剩余个数
-	MatchQ   decimal.Decimal `sql:"-"`// 本次交个数
+	Price    decimal.Decimal // 价格
+	Quantity decimal.Decimal // 总个数
+	Remained decimal.Decimal // 剩余个数
+	MatchQ   decimal.Decimal // 本次交个数
 
 	MatchCount uint // 成交次数
 	Timestamp  uint // 创建时间戳

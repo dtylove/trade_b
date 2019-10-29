@@ -15,11 +15,9 @@ func GetProduct(ctx *gin.Context) {
 		return
 	}
 
-	product := &models.Product{
-		Id: uint(pId),
-	}
+	product := &models.Product{}
 
-	err := product.FindById()
+	err := models.FindById(&product, pId)
 	if product.Id == 0 || err != nil {
 		response.Res(ctx, response.P_NOT_FOUND, nil)
 		return
@@ -47,7 +45,7 @@ func CreateProduct(ctx *gin.Context) {
 		return
 	}
 
-	if body.Base == body.Counter{
+	if body.Base == body.Counter {
 		response.Res(ctx, response.P_BASE_COUNTER_SAME, nil)
 		return
 	}
@@ -64,10 +62,20 @@ func CreateProduct(ctx *gin.Context) {
 		CounterScale: body.CounterScale,
 	}
 
-	if err := product.Add(); err != nil || product.Id == 0 {
+	if err := models.Add(&product); err != nil || product.Id == 0 {
 		response.Res(ctx, response.P_CREATE_FAILED, err)
 		return
 	}
 
 	response.Res(ctx, response.OK, product)
+}
+
+func GetProducts(ctx *gin.Context) {
+	pList, err := models.FindProductList()
+	if err != nil {
+		response.Res(ctx, response.P_NOT_FOUND, nil)
+		return
+	}
+
+	response.Res(ctx, response.OK, pList)
 }

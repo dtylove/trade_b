@@ -7,8 +7,8 @@ import (
 )
 
 type Engine struct {
-	TxId             uint       // 交易id
-	MarketId         uint         // 市场id
+	TxId             uint        // 交易id
+	MarketId         uint        // 市场id
 	OrderBookManager BookManager // book handler
 
 	//Options          Options
@@ -17,7 +17,7 @@ type Engine struct {
 }
 
 type CounterParty struct {
-	OrderId uint           // 订单号
+	OrderId uint            // 订单号
 	Pricing decimal.Decimal // 定价
 	MatchQ  decimal.Decimal // 成交量
 	Funds   decimal.Decimal // 成交价钱
@@ -25,8 +25,8 @@ type CounterParty struct {
 
 // taker 购买者 maker 出票人 卖出人
 type Trade struct {
-	TxId     uint           // 交易id
-	MarketId uint           // 市场id
+	TxId     uint            // 交易id
+	MarketId uint            // 市场id
 	Price    decimal.Decimal // 成交价
 	MatchQ   decimal.Decimal // 成交量
 	Funds    decimal.Decimal // 成交总额
@@ -43,6 +43,10 @@ func InitEngine(marketId uint) *Engine {
 		Canceled:  make(chan int, 3),
 		orderPipe: make(chan Order, 1024),
 	}
+}
+
+func (engine * Engine)Start(){
+	go engine.RunOrderApplier()
 }
 
 func (engine *Engine) AsksOrderBook() OrderBook {

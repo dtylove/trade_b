@@ -41,9 +41,10 @@ func SignUp(ctx *gin.Context) {
 
 	user.PassWord = string(hashPW)
 
-	if err = user.Add(); err != nil {
+	if err = models.Add(user); err != nil {
 		// TODO log
-		response.Res(ctx, response.U_CREATE_USER_ERR, nil)
+		panic(err)
+		response.Res(ctx, response.U_CREATE_USER_ERR, err)
 		return
 	}
 
@@ -62,15 +63,8 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
-	hashPW, err := bcrypt.GenerateFromPassword([]byte(body.PassWord), bcrypt.DefaultCost)
-	if err != nil {
-		response.Res(ctx, response.U_PWD_ERR, nil)
-		return
-	}
-
 	user := models.User{
 		Email:    body.Email,
-		PassWord: string(hashPW),
 	}
 
 	if err := user.FindByEmail(); err != nil {
@@ -78,7 +72,7 @@ func SignIn(ctx *gin.Context) {
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.PassWord), []byte(body.PassWord))
+	err := bcrypt.CompareHashAndPassword([]byte(user.PassWord), []byte(body.PassWord))
 	if err != nil {
 		response.Res(ctx, response.U_PWD_ERR, nil)
 		return
@@ -107,9 +101,10 @@ func GetUser(ctx *gin.Context) {
 	//requester := ctx.MustGet("user").(models.User)
 
 	user := models.User{}
-	user.Id = uint(userId)
-
-	user.FindById()
+	if err := models.FindById(&user, userId); err != nil {
+		response.Res(ctx, response.C_PARAMS_ERR, nil)
+		return
+	}
 
 	response.Res(ctx, response.OK, user)
 }

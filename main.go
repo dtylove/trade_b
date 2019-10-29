@@ -9,10 +9,11 @@ import (
 
 func main() {
 
-	engine := matching.InitEngine(1)
-	//go engine.RunOrderFetcher()
-	go engine.RunOrderApplier()
-
 	models.InitDB()
+
+	matching.InitEngineFactory()
+
 	rest.Start()
+
+
 }
