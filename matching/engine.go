@@ -7,13 +7,12 @@ import (
 )
 
 type Engine struct {
-	TxId             uint        // 交易id
-	MarketId         uint        // 市场id
-	OrderBookManager BookManager // book handler
-
-	//Options          Options
-	Canceled  chan int
-	orderPipe chan Order // 负责从各种消息中间件中获取order
+	TxId          uint // 交易id
+	MarketId      uint // 市场id
+	AsksOrderBook *OrderBook
+	BidsOrderBook *OrderBook
+	Canceled      chan int
+	orderPipe     chan Order // 负责从各种消息中间件中获取order
 }
 
 type CounterParty struct {
@@ -36,43 +35,45 @@ type Trade struct {
 
 func InitEngine(marketId uint) *Engine {
 	return &Engine{
-		MarketId:         marketId,
-		OrderBookManager: InitBookManager(marketId),
-		//Options:          options,
-		//Traded:           make(chan Offer, 5),
-		Canceled:  make(chan int, 3),
-		orderPipe: make(chan Order, 1024),
+		MarketId:      marketId,
+		AsksOrderBook: InitOrderBook(marketId, Asks),
+		BidsOrderBook: InitOrderBook(marketId, Bids),
+		Canceled:      make(chan int, 3),
+		orderPipe:     make(chan Order, 1024),
 	}
 }
 
-func (engine * Engine)Start(){
+func (engine *Engine) Start() {
 	go engine.RunOrderApplier()
 }
 
-func (engine *Engine) AsksOrderBook() OrderBook {
-	return engine.OrderBookManager.AsksOrderBook
+func (engine *Engine) AsksBook() *OrderBook {
+	return engine.AsksOrderBook
 }
 
-func (engine *Engine) BidsOrderBook() OrderBook {
-	return engine.OrderBookManager.BidsOrderBook
+func (engine *Engine) BidsBook() *OrderBook {
+	return engine.BidsOrderBook
 }
 
 // order的入口
 func (engine *Engine) Submit(order Order) {
-	engine.match(&order)
 
+	engine.match(&order)
+	data, _ := json.Marshal(order)
+	fmt.Println(string(data))
 	if order.IsRemain {
 		engine.Add(order)
 	}
+	engine.Print(10)
 }
 
 // 取消用
 func (engine *Engine) Cancel(order Order) {
-	var orderBook OrderBook
-	if order.OrderType == Asks {
-		orderBook = engine.AsksOrderBook()
+	var orderBook *OrderBook
+	if order.IsBuy == false {
+		orderBook = engine.AsksOrderBook
 	} else {
-		orderBook = engine.BidsOrderBook()
+		orderBook = engine.BidsOrderBook
 	}
 
 	orderBook.Remove(order)
@@ -80,36 +81,37 @@ func (engine *Engine) Cancel(order Order) {
 
 // 完全成交用
 func (engine *Engine) Remove(order Order) {
-	var orderBook OrderBook
-	if order.OrderType == Asks {
-		orderBook = engine.AsksOrderBook()
+	var orderBook *OrderBook
+	if order.IsBuy == false {
+		orderBook = engine.AsksOrderBook
 	} else {
-		orderBook = engine.BidsOrderBook()
+		orderBook = engine.BidsOrderBook
 	}
 
 	orderBook.Remove(order)
 }
 
 func (engine *Engine) match(order *Order) {
-	var orderBook OrderBook
-	if order.OrderType == Asks {
-		orderBook = engine.BidsOrderBook()
+	var orderBook *OrderBook
+	if order.IsBuy == false {
+		orderBook = engine.BidsOrderBook
 	} else {
-		orderBook = engine.AsksOrderBook()
+		orderBook = engine.AsksOrderBook
 	}
 
 	if orderBook.Size() == 0 {
 		return
 	}
 
-	marketOrder := orderBook.Top()
+	priceContainer := orderBook.Top()
+	marketOrder := priceContainer.Top()
 
 	if order.IsCrossed(marketOrder.Price) {
 		tradeInfo := order.TradeWith(marketOrder)
+		priceContainer.ChangeTotalQ(tradeInfo.MatchQ, false) // 价格容器的总量计算
 		data, _ := json.Marshal(tradeInfo)
 		fmt.Println(string(data))
 		// TODO 通知 marketOrder
-
 		if marketOrder.IsRemain == false {
 			engine.Remove(*marketOrder)
 		}
@@ -117,11 +119,11 @@ func (engine *Engine) match(order *Order) {
 }
 
 func (engine *Engine) Add(order Order) {
-	var orderBook OrderBook
-	if order.OrderType == Asks {
-		orderBook = engine.AsksOrderBook()
+	var orderBook *OrderBook
+	if order.IsBuy == false {
+		orderBook = engine.AsksOrderBook
 	} else {
-		orderBook = engine.BidsOrderBook()
+		orderBook = engine.BidsOrderBook
 	}
 
 	err := orderBook.Add(order)
@@ -179,4 +181,13 @@ func (engine *Engine) RunOrderFetcher() {
 	//engine.orderPipe <- order2
 	//engine.orderPipe <- order3
 
+}
+
+func (engine *Engine) GetDepth() {
+	
+}
+func (engine *Engine) Print(max int) {
+	fmt.Println("call Print")
+	engine.AsksOrderBook.Print(max)
+	engine.BidsOrderBook.Print(max)
 }

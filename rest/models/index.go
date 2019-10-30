@@ -8,8 +8,12 @@ import (
 	"sync"
 )
 
-var gdb *gorm.DB
+type Store struct {
+	db *gorm.DB
+}
+
 var once sync.Once
+var store Store
 
 func InitOnce() {
 	dataDriver := config.Conf.DataSource
@@ -26,17 +30,17 @@ func InitOnce() {
 		panic(err)
 	}
 
-	gdb = db
-	gdb.SingularTable(true)       //全局设置表名不可以为复数形式。
-	gdb.DB().SetMaxIdleConns(10)  //SetMaxOpenConns用于设置最大打开的连接数
-	gdb.DB().SetMaxOpenConns(100) //SetMaxIdleConns用于设置闲置的连接数
+	store.db = db
+	store.db.SingularTable(true)       //全局设置表名不可以为复数形式。
+	store.db.DB().SetMaxIdleConns(10)  //SetMaxOpenConns用于设置最大打开的连接数
+	store.db.DB().SetMaxOpenConns(100) //SetMaxIdleConns用于设置闲置的连接数
 
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
 		return "g_" + defaultTableName
 	}
 
 	if dataDriver.Migrate {
-		gdb.CreateTable(&User{}, &Order{}, &Product{})
+		store.db.CreateTable(&User{}, &Order{}, &Product{})
 	}
 }
 
@@ -45,5 +49,21 @@ func InitDB() {
 }
 
 func GetDB() *gorm.DB {
-	return gdb
+	return store.db
+}
+
+func (s *Store) BeginTx() (*Store, error) {
+	db := s.db.Begin()
+	if db.Error != nil {
+		return nil, db.Error
+	}
+	return &Store{db: db}, nil
+}
+
+func (s *Store) Rollback() error {
+	return s.db.Rollback().Error
+}
+
+func (s *Store) CommitTx() error {
+	return s.db.Commit().Error
 }

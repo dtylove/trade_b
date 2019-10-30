@@ -43,7 +43,6 @@ func SignUp(ctx *gin.Context) {
 
 	if err = models.Add(user); err != nil {
 		// TODO log
-		panic(err)
 		response.Res(ctx, response.U_CREATE_USER_ERR, err)
 		return
 	}
@@ -100,11 +99,15 @@ func GetUser(ctx *gin.Context) {
 
 	//requester := ctx.MustGet("user").(models.User)
 
-	user := models.User{}
-	if err := models.FindById(&user, userId); err != nil {
+	user := models.User{Email:"59703122@qq.com"}
+	if err := models.FindOne(&user); err != nil {
 		response.Res(ctx, response.C_PARAMS_ERR, nil)
 		return
 	}
+	//if err := models.FindOneById(&user, userId); err != nil {
+	//	response.Res(ctx, response.C_PARAMS_ERR, nil)
+	//	return
+	//}
 
 	response.Res(ctx, response.OK, user)
 }

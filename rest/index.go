@@ -18,21 +18,20 @@ func Start() {
 	r := gin.Default()
 
 	userGroup := r.Group("/user")
-
 	userGroup.POST("/signup", router.SignUp)
 	userGroup.POST("/signin", router.SignIn)
 	userGroup.GET("/:id", midware.VerifyToken(), router.GetUser)
 
 	orderGroup := r.Group("/order")
-
 	orderGroup.POST("/submit", midware.VerifyToken(), router.SubmitOrder)
 
 	productGroup := r.Group("/product")
-
 	productGroup.GET("/single/:id", router.GetProduct)
 	productGroup.GET("/list", router.GetProducts)
 	productGroup.POST("/create", router.CreateProduct)
 
+	marketGroup := r.Group("/market")
+	marketGroup.GET("/quote/:id", router.GetMarket)
 
 	err := r.Run()
 	if err != nil {

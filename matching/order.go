@@ -11,7 +11,6 @@ var Zero = decimal.NewFromFloat(0.0)
 type Order struct {
 	Id        uint `gorm:"primary_key"` // 订单id
 	IsBuy     bool                      // 买true bids 卖false asks
-	OrderType string                    // asks bids
 	MarketId  uint                      // order book id (针对不同市场 货币对)
 
 	Price    decimal.Decimal // 价格

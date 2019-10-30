@@ -8,17 +8,19 @@ import (
 )
 
 type OrderBook struct {
-	MarketId  uint       // 市场id
+	MarketId  uint      // 市场id
 	Side      string    // asks 或 bids
 	Book      *rbt.Tree // 市场中的挂单
 	Broadcast bool      // 广播
 }
 
-func InitOrderBook(marketId uint, side string) (ob OrderBook) {
-	ob.MarketId = marketId
-	ob.Side = side
-	ob.Book = rbt.NewWithStringComparator()
-	return
+func InitOrderBook(marketId uint, side string) *OrderBook {
+	ob := OrderBook{
+		MarketId: marketId,
+		Side:     side,
+		Book:     rbt.NewWithStringComparator(),
+	}
+	return &ob
 }
 
 func (ob *OrderBook) Find(order Order) (o Order, err error) {
@@ -32,18 +34,13 @@ func (ob *OrderBook) Find(order Order) (o Order, err error) {
 		err = errors.New("找不到该订单")
 		return
 	}
-	priceContainer := values.(PriceContainer)
+	priceContainer := values.(*PriceContainer)
 	o = priceContainer.Find(order.Id)
 
 	return
 }
 
 func (ob *OrderBook) Add(order Order) (err error) {
-	if ob.Side != order.OrderType {
-		return errors.New("book类型 与 订单类型不匹配 book.Side: " +
-			ob.Side + " orderType: " + order.OrderType)
-	}
-
 	if ob.Side == Asks && order.IsBuy == true {
 		return errors.New("book类型为 Asks order.IsBuy 必须为 false ")
 	}
@@ -55,7 +52,7 @@ func (ob *OrderBook) Add(order Order) (err error) {
 	container := InitContainer(order.Price)
 	values, found := ob.Book.Get(order.Price.String())
 	if found {
-		container = values.(PriceContainer)
+		container = values.(*PriceContainer)
 	}
 	container.Add(order)
 	ob.Book.Put(order.Price.String(), container)
@@ -73,7 +70,7 @@ func (ob *OrderBook) Remove(order Order) (o Order) {
 		return
 	}
 
-	priceContainer := values.(PriceContainer)
+	priceContainer := values.(*PriceContainer)
 	o = priceContainer.Find(order.Id)
 	if o.Id == 0 {
 		return
@@ -91,25 +88,25 @@ func (ob *OrderBook) Size() int {
 	return ob.Book.Size()
 }
 
-func (ob *OrderBook) Top() (order *Order) {
-	var container PriceContainer
+func (ob *OrderBook) Top() *PriceContainer {
+	var container *PriceContainer
 	if ob.Side == "asks" {
-		container = ob.Book.Left().Value.(PriceContainer)
+		container = ob.Book.Left().Value.(*PriceContainer)
 	} else {
-		container = ob.Book.Right().Value.(PriceContainer)
+		container = ob.Book.Right().Value.(*PriceContainer)
 	}
 
-	return container.Top()
+	return container
 }
 
 func (ob *OrderBook) Print(max int) {
-	//fmt.Println(ob.Book)
+	fmt.Println(ob.Book.Size())
 	iter := ob.Book.Iterator()
 	count := 0
 	for ; iter.Next() && count < max; {
 		fmt.Println("TreeKey(price): ", iter.Key())
 
-		container := iter.Value().(PriceContainer)
+		container := iter.Value().(*PriceContainer)
 		fmt.Println("ContainerPrice: ", container.Price)
 		//fmt.Println("OrdersContainer:  ", container.Orders)
 		orderSilce := container.Orders

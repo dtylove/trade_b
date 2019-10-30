@@ -13,11 +13,9 @@ func GetEngine(marketId uint) *Engine {
 }
 
 func InitEngineFactory() {
-	fmt.Println("call InitEngineFactory ")
-	pList, err := models.FindProductList()
+	var pList []models.Product
+	err := models.FindList(&pList)
 
-	data, _ := json.Marshal(pList)
-	fmt.Printf(string(data))
 	if err != nil {
 		panic(err)
 	}
@@ -26,5 +24,10 @@ func InitEngineFactory() {
 		fmt.Println(string(data))
 		Engines[p.Id] = InitEngine(p.Id)
 		Engines[p.Id].Start()
+		fmt.Println(Engines[p.Id])
 	}
+}
+
+func AddProduct(p *models.Product) {
+	Engines[p.Id] = InitEngine(p.Id)
 }

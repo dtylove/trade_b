@@ -1,17 +1,21 @@
 package matching
 
-import "github.com/shopspring/decimal"
+import (
+	"github.com/shopspring/decimal"
+)
 
 // 相同价格的挂单放到数组内
 type PriceContainer struct {
 	Price  decimal.Decimal
 	Orders []Order
+	TotalQ decimal.Decimal
 }
 
-func InitContainer(price decimal.Decimal) (pl PriceContainer) {
-	pl.Price = price
-	pl.Orders = []Order{}
-	return
+func InitContainer(price decimal.Decimal) *PriceContainer {
+	return &PriceContainer{
+		Price:  price,
+		Orders: []Order{},
+	}
 }
 
 func (pl *PriceContainer) Top() *Order {
@@ -25,7 +29,20 @@ func (pl *PriceContainer) IsEmpty() (result bool) {
 	return
 }
 
+// isIncr true 增长 false 减少
+func (pl *PriceContainer) ChangeTotalQ(quantity decimal.Decimal, isIncr bool) {
+	if isIncr {
+		pl.TotalQ.Add(quantity)
+	} else {
+		pl.TotalQ.Sub(quantity)
+	}
+}
+
 func (pl *PriceContainer) Add(order Order) {
+	if len(pl.Orders) == 0 {
+		pl.TotalQ = decimal.Zero
+	}
+	pl.ChangeTotalQ(order.Remained, true)
 	pl.Orders = append(pl.Orders, order)
 	return
 }

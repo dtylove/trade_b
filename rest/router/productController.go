@@ -1,6 +1,7 @@
 package router
 
 import (
+	"dtyTrade/matching"
 	"dtyTrade/rest/models"
 	"dtyTrade/rest/response"
 	"dtyTrade/utils"
@@ -15,9 +16,9 @@ func GetProduct(ctx *gin.Context) {
 		return
 	}
 
-	product := &models.Product{}
+	product := models.Product{Id: pId}
 
-	err := models.FindById(&product, pId)
+	err := models.FindOne(&product)
 	if product.Id == 0 || err != nil {
 		response.Res(ctx, response.P_NOT_FOUND, nil)
 		return
@@ -67,11 +68,14 @@ func CreateProduct(ctx *gin.Context) {
 		return
 	}
 
+	matching.AddProduct(&product)
 	response.Res(ctx, response.OK, product)
 }
 
 func GetProducts(ctx *gin.Context) {
-	pList, err := models.FindProductList()
+	var pList []models.Product
+
+	err := models.FindList(&pList)
 	if err != nil {
 		response.Res(ctx, response.P_NOT_FOUND, nil)
 		return

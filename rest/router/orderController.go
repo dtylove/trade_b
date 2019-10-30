@@ -1,10 +1,12 @@
 package router
 
 import (
+	"dtyTrade/matching"
 	"dtyTrade/rest/models"
 	"dtyTrade/rest/response"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 	"time"
 )
 
@@ -22,22 +24,23 @@ func SubmitOrder(ctx *gin.Context) {
 		return
 	}
 
-	//price, err := decimal.NewFromString(body.Price)
-	//if err != nil {
-	//	response.Res(ctx, response.C_PARAMS_ERR, "price is not number")
-	//	return
-	//}
-	//
-	//quantity, err := decimal.NewFromString(body.Quantity)
-	//if err != nil {
-	//	response.Res(ctx, response.C_PARAMS_ERR, "quantity is not string number")
-	//	return
-	//}
+	price, err := decimal.NewFromString(body.Price)
+	if err != nil {
+		response.Res(ctx, response.C_PARAMS_ERR, "price is not number")
+		return
+	}
+
+	quantity, err := decimal.NewFromString(body.Quantity)
+	if err != nil {
+		response.Res(ctx, response.C_PARAMS_ERR, "quantity is not string number")
+		return
+	}
 
 	user := ctx.MustGet("user").(*models.User)
 	order := models.Order{
-		Price:    body.Price,
-		Quantity: body.Quantity,
+		Price:     body.Price,
+		Quantity:  body.Quantity,
+		Remained:  body.Quantity,
 		IsBuy:     body.IsBuy,
 		MarketId:  body.MarketId,
 		UserId:    user.Id,
@@ -49,6 +52,21 @@ func SubmitOrder(ctx *gin.Context) {
 		response.Res(ctx, response.O_ADD_ERR, nil)
 		return
 	}
+
+	marketOrder := matching.Order{
+		Id:        order.Id,
+		Price:     price,
+		IsBuy:     order.IsBuy,
+		Quantity:  quantity,
+		Remained:  quantity,
+		MarketId:  order.MarketId,
+		UserId:    order.UserId,
+		Timestamp: order.Timestamp,
+		IsRemain:  order.IsRemain,
+	}
+
+	// TODO kafka push
+	matching.GetEngine(order.MarketId).Submit(marketOrder)
 
 	response.Res(ctx, response.OK, order)
 
