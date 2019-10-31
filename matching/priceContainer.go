@@ -32,17 +32,18 @@ func (pl *PriceContainer) IsEmpty() (result bool) {
 // isIncr true 增长 false 减少
 func (pl *PriceContainer) ChangeTotalQ(quantity decimal.Decimal, isIncr bool) {
 	if isIncr {
-		pl.TotalQ.Add(quantity)
+		pl.TotalQ = pl.TotalQ.Add(quantity)
 	} else {
-		pl.TotalQ.Sub(quantity)
+		pl.TotalQ = pl.TotalQ.Sub(quantity)
 	}
 }
 
 func (pl *PriceContainer) Add(order Order) {
 	if len(pl.Orders) == 0 {
-		pl.TotalQ = decimal.Zero
+		pl.TotalQ = order.Remained
+	} else {
+		pl.ChangeTotalQ(order.Remained, true)
 	}
-	pl.ChangeTotalQ(order.Remained, true)
 	pl.Orders = append(pl.Orders, order)
 	return
 }

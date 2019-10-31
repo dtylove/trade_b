@@ -4,12 +4,15 @@ import (
 	"dtyTrade/matching"
 	"dtyTrade/rest/response"
 	"dtyTrade/utils"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
+type depthResp struct {
+	Asks []matching.Quote `json:"asks"`
+	Bids []matching.Quote `json:"bids"`
+}
+
 func GetMarket(ctx *gin.Context) {
-	fmt.Println("call GetMarket ")
 	id := ctx.Param("id")
 	var pId uint
 	if err := utils.StrToUint(id, &pId); err != nil {
@@ -18,6 +21,11 @@ func GetMarket(ctx *gin.Context) {
 	}
 
 	engine := matching.GetEngine(pId)
+	asks, bids := engine.GetDepth()
+	depth := depthResp{
+		Asks: asks,
+		Bids: bids,
+	}
 
-	engine.Print(10)
+	response.Res(ctx, response.OK, depth)
 }

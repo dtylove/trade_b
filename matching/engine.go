@@ -47,14 +47,6 @@ func (engine *Engine) Start() {
 	go engine.RunOrderApplier()
 }
 
-func (engine *Engine) AsksBook() *OrderBook {
-	return engine.AsksOrderBook
-}
-
-func (engine *Engine) BidsBook() *OrderBook {
-	return engine.BidsOrderBook
-}
-
 // order的入口
 func (engine *Engine) Submit(order Order) {
 
@@ -62,7 +54,7 @@ func (engine *Engine) Submit(order Order) {
 	data, _ := json.Marshal(order)
 	fmt.Println(string(data))
 	if order.IsRemain {
-		engine.Add(order)
+		engine.add(order)
 	}
 	engine.Print(10)
 }
@@ -80,7 +72,7 @@ func (engine *Engine) Cancel(order Order) {
 }
 
 // 完全成交用
-func (engine *Engine) Remove(order Order) {
+func (engine *Engine) remove(order Order) {
 	var orderBook *OrderBook
 	if order.IsBuy == false {
 		orderBook = engine.AsksOrderBook
@@ -113,12 +105,12 @@ func (engine *Engine) match(order *Order) {
 		fmt.Println(string(data))
 		// TODO 通知 marketOrder
 		if marketOrder.IsRemain == false {
-			engine.Remove(*marketOrder)
+			engine.remove(*marketOrder)
 		}
 	}
 }
 
-func (engine *Engine) Add(order Order) {
+func (engine *Engine) add(order Order) {
 	var orderBook *OrderBook
 	if order.IsBuy == false {
 		orderBook = engine.AsksOrderBook
@@ -183,9 +175,50 @@ func (engine *Engine) RunOrderFetcher() {
 
 }
 
-func (engine *Engine) GetDepth() {
-	
+func (engine *Engine) GetDepth() ([]Quote, []Quote) {
+	asksLength := engine.AsksOrderBook.Book.Size()
+	asks := make([]Quote, asksLength)
+	iterAsks := engine.AsksOrderBook.Book.Iterator()
+	indexAsks := 0
+	for ; iterAsks.Next() && asksLength > 0; {
+		pl := iterAsks.Value().(*PriceContainer)
+		quote := Quote{
+			Price:  pl.Price,
+			TotalQ: pl.TotalQ,
+		}
+		if indexAsks > 0 {
+			quote.Accumulation = quote.TotalQ.Add(asks[indexAsks-1].Accumulation)
+		} else {
+			quote.Accumulation = pl.TotalQ
+		}
+		asks[indexAsks] = quote
+		indexAsks++
+	}
+
+	bidsLength := engine.BidsOrderBook.Book.Size()
+	bids := make([]Quote, bidsLength)
+	iterBids := engine.BidsOrderBook.Book.Iterator()
+	indexBids := 0
+	// TODO bids 买 价格倒序
+	iterBids.End()
+	for ; iterBids.Prev() && bidsLength > 0; {
+		pl := iterBids.Value().(*PriceContainer)
+		quote := Quote{
+			Price:  pl.Price,
+			TotalQ: pl.TotalQ,
+		}
+		if indexBids > 0 {
+			quote.Accumulation = quote.TotalQ.Add(bids[indexBids-1].Accumulation)
+		} else {
+			quote.Accumulation = pl.TotalQ
+		}
+		bids[indexBids] = quote
+		indexBids++
+	}
+
+	return asks, bids
 }
+
 func (engine *Engine) Print(max int) {
 	fmt.Println("call Print")
 	engine.AsksOrderBook.Print(max)
