@@ -1,11 +1,11 @@
 package models
 
 import (
-	"dtyTrade/config"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"sync"
+	"trade_b/config"
 )
 
 type Store struct {

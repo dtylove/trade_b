@@ -1,11 +1,11 @@
 package service
 
 import (
-	"dtyTrade/config"
-	"dtyTrade/rest/models"
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"time"
+	"trade_b/config"
+	"trade_b/rest/models"
 )
 
 func RefreshAccessToken(id uint, email string) (string, error) {

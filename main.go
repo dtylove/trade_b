@@ -1,10 +1,10 @@
 package main
 
 import (
-	_ "dtyTrade/config"
-	"dtyTrade/matching"
-	"dtyTrade/rest"
-	"dtyTrade/rest/models"
+	_ "trade_b/config"
+	"trade_b/matching"
+	"trade_b/rest"
+	"trade_b/rest/models"
 )
 
 func main() {

@@ -1,9 +1,9 @@
 package midware
 
 import (
-	"dtyTrade/rest/response"
-	"dtyTrade/rest/service"
 	"github.com/gin-gonic/gin"
+	"trade_b/rest/response"
+	"trade_b/rest/service"
 )
 
 func VerifyToken() gin.HandlerFunc {

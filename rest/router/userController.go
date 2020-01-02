@@ -1,13 +1,13 @@
 package router
 
 import (
-	"dtyTrade/rest/models"
-	"dtyTrade/rest/response"
-	"dtyTrade/rest/service"
-	"dtyTrade/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"trade_b/rest/models"
+	"trade_b/rest/response"
+	"trade_b/rest/service"
+	"trade_b/utils"
 )
 
 const tokenExpired = 7 * 24 * 60 * 60

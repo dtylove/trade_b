@@ -1,13 +1,13 @@
 package rest
 
 import (
-	_ "dtyTrade/rest/response"
+	_ "trade_b/rest/response"
 
-	"dtyTrade/rest/midware"
-	"dtyTrade/rest/router"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
+	"trade_b/rest/midware"
+	"trade_b/rest/router"
 )
 
 func Start() {
